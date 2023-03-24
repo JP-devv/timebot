@@ -6,9 +6,9 @@ from selenium.webdriver.support.ui import Select
 # Credentials
 username, password = None, None
 with open('credentials', 'r') as f:
-  username = f.readline().strip()
-  password = f.readline().strip()
-  
+    username = f.readline().strip()
+    password = f.readline().strip()
+
 # Prompt if on campus
 print('Are you on campus or are using a VPN? (y/n)')
 prompt = True if input() == 'y' else False
@@ -23,13 +23,15 @@ driver.get('https://my.utrgv.edu/web/myutrgv/home?p_p_id=com_liferay_login_web_p
 
 # Find username box and send
 print('Finding username box...')
-login = driver.find_element(By.NAME, '_com_liferay_login_web_portlet_LoginPortlet_login')
+login = driver.find_element(
+    By.NAME, '_com_liferay_login_web_portlet_LoginPortlet_login')
 login.clear()
 login.send_keys(username)
 
 # Find password box and send
 print('Finding password box...')
-login = driver.find_element(By.NAME, '_com_liferay_login_web_portlet_LoginPortlet_password')
+login = driver.find_element(
+    By.NAME, '_com_liferay_login_web_portlet_LoginPortlet_password')
 login.send_keys(password)
 
 # Click sign in button
@@ -44,9 +46,9 @@ time.sleep(14)
 
 # test
 if not prompt:
-  print('Press enter when you have authenticated successfully...')
-  ok = input()
-  print('Continuing...')
+    print('Press enter when you have authenticated successfully...')
+    ok = input()
+    print('Continuing...')
 
 # Get window handler, and switch to new tab
 window_handles = driver.window_handles
@@ -63,63 +65,35 @@ frame = driver.find_element(By.ID, 'main_target_win0')
 # switch to the frame
 driver.switch_to.frame(frame)
 
-# CHANGE THIS
+# Read schedule
+schedule = {}
+with open('schedule.txt', 'r') as f:
+    lines = f.readlines()
+    for line in lines:
+        line = line.strip().split()
+        schedule[line[0]] = line[1:len(line)]
+assert schedule, 'Schedule file is empty'
+
+# Fill in schedule accordingly
 for x in range(15):
-  element = driver.find_element(By.ID, f'DAY_OF_WK_DISPLAY${x}').text
-  print(f'Entering hours for {element} no. {x}')
-  if 'Fri' in element:
-    # Select dropdown
-    dropdown = driver.find_element(By.NAME, f'TRC${x}')
-    select = Select(dropdown)
-    select.select_by_index(1)
+    element = driver.find_element(By.ID, f'DAY_OF_WK_DISPLAY${x}').text
+    print(f'Entering hours for {element} no. {x}')
+    
+    # Check if element is in schedule
+    if element in schedule:
+      
+        # Select dropdown box
+        dropdown = driver.find_element(By.NAME, f'TRC${x}')
+        select = Select(dropdown)
+        select.select_by_index(1)
+        
+        # Fill in time slots
+        time = schedule[element]
+        for i in range(len(time)):
+            box = driver.find_element(By.NAME, f'PUNCH_TIME_{i+1}${x}')
+            box.clear()
+            box.send_keys(time[i])
 
-    # In time
-    box = driver.find_element(By.NAME, f'PUNCH_TIME_1${x}')
-    box.clear()
-    box.send_keys('1:30PM')
-
-    # Out time 
-    box = driver.find_element(By.NAME, f'PUNCH_TIME_2${x}')
-    box.clear()
-    box.send_keys('3:30PM')
-
-    # In time
-    box = driver.find_element(By.NAME, f'PUNCH_TIME_3${x}')
-    box.clear()
-    box.send_keys('8:00PM')
-
-    # Out time 
-    box = driver.find_element(By.NAME, f'PUNCH_TIME_4${x}')
-    box.clear()
-    box.send_keys('9:30PM')
- 
-  elif 'Tue' in element or 'Thu' in element:
-    # Select dropdown
-    dropdown = driver.find_element(By.NAME, f'TRC${x}')
-    select = Select(dropdown)
-    select.select_by_index(1)
-
-    # In time
-    box = driver.find_element(By.NAME, f'PUNCH_TIME_1${x}')
-    box.clear()
-    box.send_keys('1:00PM')
-
-    # Out time 
-    box = driver.find_element(By.NAME, f'PUNCH_TIME_2${x}')
-    box.clear()
-    box.send_keys('6:00PM')
-
-  elif 'Wed' in element:
-     # In time
-    box = driver.find_element(By.NAME, f'PUNCH_TIME_1${x}')
-    box.clear()
-    box.send_keys('8:00PM')
-
-    # Out time 
-    box = driver.find_element(By.NAME, f'PUNCH_TIME_2${x}')
-    box.clear()
-    box.send_keys('9:30PM')
- 
 # Keep browser open
 print("Success! Press enter to quit")
 quit = input()

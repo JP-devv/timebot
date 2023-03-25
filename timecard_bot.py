@@ -9,10 +9,6 @@ with open('credentials', 'r') as f:
     username = f.readline().strip()
     password = f.readline().strip()
 
-# Prompt if on campus
-print('Are you on campus or are using a VPN? (y/n)')
-prompt = True if input() == 'y' else False
-
 # Create a webdriver object for Chrome
 print('Opening Chrome...')
 driver = webdriver.Chrome()
@@ -44,11 +40,10 @@ time.sleep(0.5)
 driver.find_element(By.ID, 'ql-name-peopleSoftAzure').click()
 time.sleep(14)
 
-# test
-if not prompt:
-    print('Press enter when you have authenticated successfully...')
-    ok = input()
-    print('Continuing...')
+# Wait for authentication
+print('Complete Authentication.\nAre you late? Y/N')
+msg = input()
+print('Continuing...')
 
 # Get window handler, and switch to new tab
 window_handles = driver.window_handles
@@ -61,9 +56,14 @@ time.sleep(4.5)
 
 # Website switches to an iframe, create a driver from that
 frame = driver.find_element(By.ID, 'main_target_win0')
-
+    
 # switch to the frame
 driver.switch_to.frame(frame)
+
+# Click back button?
+if 'y' in msg:
+    driver.find_element(By.NAME, 'DERIVED_TL_WEEK_PREV_WK_BTN').click()
+    time.sleep(1)
 
 # Read schedule
 schedule = {}

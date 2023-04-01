@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import Select
 
 # Credentials
 username, password = None, None
-with open('credentials', 'r') as f:
+with open('credentials.txt', 'r') as f:
     username = f.readline().strip()
     password = f.readline().strip()
 

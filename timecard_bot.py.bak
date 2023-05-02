@@ -81,9 +81,11 @@ def navigate_to_payroll_and_compensation(driver):
 
 def fill_schedule(driver, schedule, late):
     if late:
-        # driver.find_element(By.ID, 'DERIVED_TL_WEEK_PREV_WK_BTN').click()
-        print('Enter once you clicked the button')
-        ok = input()
+        driver.find_element(By.NAME, 'DERIVED_TL_WEEK_PREV_WK_BTN').click()
+        # WebDriverWait(driver, 10).until(
+        #     EC.element_to_be_clickable(
+        #         (By.NAME, 'DERIVED_TL_WEEK_PREV_WK_BTN'))
+        # ).click()
 
     for x in range(15):
         element = driver.find_element(By.ID, f'DAY_OF_WK_DISPLAY${x}').text
